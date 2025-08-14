@@ -1,0 +1,187 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Light in the Night — Animated Logo</title>
+  <style>
+    :root{
+      --bg:#0b0b0f;
+      --sky:#1e4fd6;
+      --star:#fff7c6;
+      --moon:#ffe9a6;
+      --neon:#5CF45F;
+      --lamp:#ffd56a;
+    }
+    html,body{height:100%;margin:0;background:var(--bg);display:grid;place-items:center;font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+    .wrap{width:min(92vw,820px);}
+    svg{width:100%;height:auto;display:block}/* LIGHT SWEEP */
+.light-cone{transform-origin: 400px 360px; /* lamp top pivot */
+  opacity:.75; filter:url(#soften);
+  animation: swing 6s ease-in-out infinite;
+}
+@keyframes swing{ 0%{transform:rotate(-25deg)} 50%{transform:rotate(25deg)} 100%{transform:rotate(-25deg)} }
+
+/* subtle lamp glow pulse */
+.lamp-glow{animation: glow 2.4s ease-in-out infinite}
+@keyframes glow{ 0%{opacity:.7} 50%{opacity:1} 100%{opacity:.7} }
+
+/* CROW idle bounce */
+.crow{transform-origin: 400px 360px; animation: crowIdle 3.5s ease-in-out infinite}
+@keyframes crowIdle{0%,100%{transform: translateY(0)} 50%{transform: translateY(-2px)}}
+
+/* CROW "CAW" burst (triggered by JS via .caw-now) */
+.caw-now{animation: crowCaw .8s cubic-bezier(.2,.9,.2,1) 1}
+@keyframes crowCaw{0%{transform:translateY(0) rotate(0)} 30%{transform:translateY(-4px) rotate(-3deg)} 60%{transform:translateY(0) rotate(0)} 100%{transform:translateY(0)} }
+
+/* Beak open/close during caw */
+.beak-upper{transform-origin: 435px 332px}
+.beak-open .beak-upper{animation: beak .8s ease-out 1}
+@keyframes beak{0%{transform:rotate(0)} 25%{transform:rotate(-18deg)} 55%{transform:rotate(-18deg)} 100%{transform:rotate(0)}}
+
+/* Skunk tail gentle wiggle */
+.tail{transform-origin: 560px 560px; animation: tail 2.8s ease-in-out infinite}
+@keyframes tail{0%{transform:rotate(2deg)} 50%{transform:rotate(-4deg)} 100%{transform:rotate(2deg)}}
+
+/* Title text glow */
+.neon{fill:var(--neon); filter:url(#neonGlow)}
+
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <!-- Optional audio: drop a short crow mp3 next to this file and name it crow.mp3 -->
+    <audio id="cawAudio" preload="auto">
+      <source src="crow.mp3" type="audio/mpeg" />
+    </audio><svg viewBox="0 0 800 800" aria-label="Light in the Night animated logo" role="img">
+  <defs>
+    <radialGradient id="skyGrad" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#2f66ff"/>
+      <stop offset="100%" stop-color="var(--sky)"/>
+    </radialGradient>
+    <filter id="soften" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2.5"/>
+    </filter>
+    <filter id="neonGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <linearGradient id="beam" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="var(--lamp)" stop-opacity=".55"/>
+      <stop offset="100%" stop-color="var(--lamp)" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- circular sky -->
+  <circle cx="400" cy="380" r="330" fill="url(#skyGrad)"/>
+
+  <!-- stars -->
+  <g fill="var(--star)">
+    <path d="M190 270 l6 10 l-10 -6 l10 -6 l-6 10 z"/>
+    <path d="M590 320 l6 10 l-10 -6 l10 -6 l-6 10 z"/>
+    <path d="M520 250 l6 10 l-10 -6 l10 -6 l-6 10 z"/>
+    <path d="M260 210 l6 10 l-10 -6 l10 -6 l-6 10 z"/>
+  </g>
+
+  <!-- moon -->
+  <path d="M590 210a60 60 0 1 1 -80 80a70 70 0 1 0 80 -80z" fill="var(--moon)"/>
+
+  <!-- grass silhouette -->
+  <g fill="#0a0a0a">
+    <path d="M90 650h620v40H90z"/>
+    <path d="M140 648 l10 28 l-20 0z"/>
+    <path d="M660 648 l10 28 l-20 0z"/>
+  </g>
+
+  <!-- LIGHT CONE (rotates around lamp top) -->
+  <g class="light-cone">
+    <path d="M400 360 L120 600 L400 600 Z" fill="url(#beam)"/>
+    <path d="M400 360 L680 600 L400 600 Z" fill="url(#beam)"/>
+  </g>
+
+  <!-- bench + lamp post base -->
+  <g fill="#0a0a0a">
+    <rect x="180" y="450" width="440" height="30" rx="6"/>
+    <rect x="180" y="500" width="440" height="30" rx="6"/>
+    <rect x="200" y="480" width="30" height="140"/>
+    <rect x="570" y="480" width="30" height="140"/>
+    <rect x="386" y="420" width="30" height="200"/>
+  </g>
+
+  <!-- sleeping figure silhouette -->
+  <path d="M210 450 q40 -40 80 0 h160 q60 0 100 40 q-140 20 -340 0 z" fill="#0a0a0a"/>
+
+  <!-- lamp head & glow -->
+  <g class="lamp-glow">
+    <rect x="367" y="335" width="68" height="55" rx="8" fill="#0a0a0a"/>
+    <rect x="374" y="343" width="54" height="40" rx="6" fill="var(--lamp)"/>
+  </g>
+
+  <!-- CROW on the lamp -->
+  <g id="crow" class="crow" fill="#0a0a0a">
+    <!-- body -->
+    <path d="M360 330 q40 -30 90 -5 q35 15 45 5 q-15 15 -10 22 q0 0 -25 5 q-25 5 -40 0 q-35 10 -60 -2z"/>
+    <!-- legs -->
+    <rect x="415" y="355" width="5" height="18"/>
+    <rect x="430" y="355" width="5" height="18"/>
+    <!-- head -->
+    <circle cx="445" cy="330" r="14"/>
+    <circle cx="450" cy="328" r="2" fill="#fff"/>
+    <!-- beak: upper is separate for rotation -->
+    <g class="beak-upper">
+      <path d="M452 330 l24 -6 l-20 -6 z"/>
+    </g>
+    <path d="M452 332 l26 2 l-22 8 z"/>
+  </g>
+
+  <!-- skunk under bench -->
+  <g id="skunk" fill="#0a0a0a">
+    <ellipse cx="540" cy="560" rx="55" ry="25"/>
+    <circle cx="585" cy="555" r="12"/>
+    <rect x="505" y="570" width="60" height="12" rx="6"/>
+    <!-- eye -->
+    <circle cx="592" cy="552" r="2" fill="#fff"/>
+    <!-- stripe -->
+    <path d="M493 560 q40 -40 110 -10" stroke="#fff" stroke-width="10" fill="none" stroke-linecap="round"/>
+    <!-- tail -->
+    <g class="tail">
+      <path d="M585 560 q60 -10 50 50 q-40 -5 -70 10" fill="#0a0a0a"/>
+      <path d="M590 565 q40 0 30 35 q-25 -4 -45 6" stroke="#fff" stroke-width="8" fill="none" stroke-linecap="round"/>
+    </g>
+  </g>
+
+  <!-- Title -->
+  <g transform="translate(120,720) rotate(-6)">
+    <text class="neon" x="0" y="0" font-size="82" font-weight="800" letter-spacing="3">LIGHT IN THE NIGHT</text>
+  </g>
+</svg>
+
+  </div>  <script>
+    // Periodic crow "caw" with beak animation and optional audio
+    const crow = document.getElementById('crow');
+    const audio = document.getElementById('cawAudio');
+
+    function randomBetween(min,max){return Math.random()*(max-min)+min}
+
+    function crowCaw(){
+      crow.classList.add('caw-now','beak-open');
+      // play audio if present
+      if (audio && audio.readyState > 0){
+        try{ audio.currentTime = 0; audio.play().catch(() => {});}catch(e){}
+      }
+      setTimeout(()=>{
+        crow.classList.remove('caw-now','beak-open');
+        scheduleNext();
+      }, 820);
+    }
+
+    function scheduleNext(){
+      const delay = randomBetween(4000, 9000); // 4–9s
+      setTimeout(crowCaw, delay);
+    }
+
+    scheduleNext();
+  </script></body>
+</html>
