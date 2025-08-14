@@ -9,18 +9,60 @@
     :root{
       --bg:#0b0b0f; --panel:#11131a; --panel-2:#171926; --ink:#e9eefc; --muted:#a9b2d5;
       --accent:#5CF45F; --accent-2:#62a4ff; --danger:#ff6a6a; --shadow: 0 10px 30px rgba(0,0,0,.35);
-      --radius:18px;
+      --radius:18px; --glass: rgba(12,16,30,.65);
     }
     *{box-sizing:border-box}
     html,body{margin:0;background:linear-gradient(180deg,#0b0b0f,#0e1220 70%);color:var(--ink);font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
     a{color:var(--accent-2);text-decoration:none}
     img{max-width:100%;display:block}
-    .shell{max-width:1100px;margin:auto;padding:20px}
-    header{display:flex;align-items:center;gap:16px;padding:14px 0}
-    header img.logo{width:64px;height:64px;border-radius:50%;box-shadow:var(--shadow)}
-    nav{margin-left:auto;display:flex;gap:10px;flex-wrap:wrap}
-    nav a{padding:10px 14px;border-radius:999px;background:#0f1320;color:var(--ink);border:1px solid #1e2440}
-    nav a.active{background:var(--accent-2);color:#02040a}
+
+    /* Layout shell */
+    .shell{max-width:1100px;margin:auto;padding:16px 18px}
+
+    /* ===== MOBILE TOP BAR (always visible on phones) ===== */
+    .mobile-bar{
+      position:fixed; inset:0 0 auto 0; height:56px; display:flex; align-items:center; gap:10px;
+      padding:8px 12px; background:var(--glass); backdrop-filter: blur(10px);
+      border-bottom:1px solid #1e2440; z-index:50;
+    }
+    .mobile-bar img{width:36px;height:36px;border-radius:50%; background:#0f1423}
+    .mobile-bar .title{font-weight:700}
+    .mobile-bar .spacer{flex:1}
+    .mobile-bar .mini-tabs{display:flex; gap:6px}
+    .mobile-bar .mini-tabs a{
+      padding:6px 10px;border-radius:999px;background:#0f1320;color:var(--ink);
+      border:1px solid #1e2440; font-size:13px
+    }
+    @media (min-width:720px){ .mobile-bar{display:none} }
+
+    /* Add top padding so content doesn't hide under the mobile bar */
+    body.has-mobilebar .shell{padding-top:72px}
+
+    /* ===== Header (auto-shrinks on scroll) ===== */
+    .hdr{display:grid;grid-template-columns:1fr;gap:12px;padding:12px 0}
+    .brand{display:flex;align-items:center;gap:12px;min-width:0}
+    .logo{width:72px;height:72px;border-radius:50%;box-shadow:var(--shadow);flex:0 0 auto;background:#0f1423}
+    .title h1{margin:0;color:var(--ink);font-size:clamp(22px,4.5vw,40px);line-height:1.1}
+    .title .eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+    .hdr.compact .logo{width:48px;height:48px;transition:width .18s,height .18s}
+    .hdr.compact .title h1{font-size:clamp(20px,4vw,34px);transition:font-size .18s}
+
+    /* Tabs: sticky + blur glass */
+    .tabs{
+      position: sticky; top: 64px; z-index: 40;
+      display:grid; grid-auto-flow:column; grid-auto-columns:1fr; gap:8px;
+      background:var(--glass); backdrop-filter: blur(10px);
+      padding:6px; border-radius:999px; border:1px solid #1e2440;
+    }
+    .tabs a{padding:10px 14px;border-radius:999px;background:#0f1320;color:var(--ink);
+            border:1px solid #1e2440;text-align:center;white-space:nowrap}
+    .tabs a.active{background:var(--accent-2);color:#02040a}
+    @media (min-width:720px){
+      .hdr{grid-template-columns:auto 1fr;align-items:center}
+      .tabs{top: 0; justify-self:end; grid-auto-columns:auto}
+    }
+
+    /* Common UI */
     .hero{display:grid;grid-template-columns:1.1fr .9fr;gap:20px;align-items:stretch}
     .card{background:var(--panel);border:1px solid #1e2440;border-radius:var(--radius);box-shadow:var(--shadow)}
     .pad{padding:18px}
@@ -59,15 +101,31 @@
   </style>
 </head>
 <body>
+  <!-- MOBILE TOP BAR -->
+  <div class="mobile-bar">
+    <img src="/logo.png" alt="Logo" onerror="this.style.visibility='hidden'">
+    <div class="title">Light in the Night</div>
+    <div class="spacer"></div>
+    <div class="mini-tabs">
+      <a href="#home" data-route="home">Podcast</a>
+      <a href="#blog" data-route="blog">Blog</a>
+      <a href="#store" data-route="store">Merch</a>
+    </div>
+  </div>
+
   <div class="shell">
-    <!-- Header -->
-    <header>
-      <img src="logo.png" alt="Light in the Night logo" class="logo" />
-      <div>
-        <div class="eyebrow">Light in the Night</div>
-        <h1 style="margin:2px 0 0">Podcast · Blog · Merch</h1>
+    <!-- HEADER -->
+    <header class="hdr" id="hdr">
+      <div class="brand">
+        <img src="/logo.png" alt="Light in the Night logo" class="logo" onerror="this.classList.add('hide')" />
+        <div class="title">
+          <div class="eyebrow">Light in the Night</div>
+          <h1>Podcast · Blog · Merch</h1>
+        </div>
       </div>
-      <nav id="nav">
+
+      <!-- Sticky tabs -->
+      <nav id="nav" class="tabs">
         <a href="#home" data-route="home">Podcast</a>
         <a href="#blog" data-route="blog">Blog</a>
         <a href="#store" data-route="store">Merch</a>
@@ -80,6 +138,7 @@
     <footer>© <span id="year"></span> Light in the Night. All rights reserved.</footer>
   </div>
 
+  <!-- =================== TEMPLATES =================== -->
   <template id="homeTpl">
     <section class="hero">
       <div class="card pad stack">
@@ -94,7 +153,7 @@
             Your browser does not support the audio element.
           </audio>
         </div>
-        <p class="muted">Tip: replace the stream URL in the code with your real live stream (Icecast/Shoutcast/Radio.co/etc.).</p>
+        <p class="muted">Tip: replace the stream URL with your real live stream (Icecast/Shoutcast/Radio.co/etc.).</p>
       </div>
 
       <div class="card pad stack">
@@ -137,7 +196,7 @@
           <input id="postTitle" placeholder="Post title" class="btn" style="width:100%;background:#0f1423;border-color:#243054;margin:8px 0" />
           <textarea id="postBody" placeholder="Write something…"></textarea>
           <button class="btn primary" id="publish">Publish</button>
-          <p class="muted" style="margin-top:6px">Posts are saved locally in your browser (no server required). You can delete or edit anytime.</p>
+          <p class="muted" style="margin-top:6px">Posts are saved locally in your browser (no server required).</p>
         </div>
       </aside>
     </section>
@@ -167,7 +226,7 @@
           <div id="cartTotal" class="price">$0.00</div>
         </div>
         <button class="btn primary" id="checkout" style="margin-top:10px">Checkout</button>
-        <p class="muted" style="margin-top:6px">Demo checkout only — wire it to Stripe later.</p>
+        <p class="muted" style="margin-top:6px">Demo checkout only — connect Stripe later.</p>
       </aside>
     </section>
   </template>
@@ -191,6 +250,19 @@
     const $$ = s => [...document.querySelectorAll(s)];
     const view = $('#view');
     const nav = $('#nav');
+
+    // Body padding when mobile bar is present
+    function applyMobileBarFlag(){
+      document.body.classList.toggle('has-mobilebar', window.innerWidth < 720);
+    }
+    window.addEventListener('resize', applyMobileBarFlag);
+    applyMobileBarFlag();
+
+    // Shrink header on scroll
+    const hdr = $('#hdr');
+    window.addEventListener('scroll', () => {
+      hdr.classList.toggle('compact', window.scrollY > 40);
+    });
 
     const sampleEpisodes = [
       {
@@ -231,7 +303,7 @@
     // Router
     function route(){
       const r = (location.hash.replace('#','') || 'home').toLowerCase();
-      $$('#nav a').forEach(a => a.classList.toggle('active', a.dataset.route===r));
+      $$('#nav a, .mobile-bar .mini-tabs a').forEach(a => a.classList.toggle('active', a.dataset.route===r));
       if(r==='home') renderHome();
       else if(r==='blog') renderBlog();
       else if(r==='store') renderStore();
@@ -248,12 +320,18 @@
 
       sampleEpisodes.forEach(ep=>{
         const node = document.importNode(tpl,true);
-        node.querySelector('img').src = ep.img;
+        const img = node.querySelector('img');
+        img.src = ep.img;
+        img.alt = ep.title;
+        img.onerror = () => { img.src = '/logo.png'; };
+
         node.querySelector('h4').textContent = ep.title;
         node.querySelector('time').textContent = new Date(ep.date).toLocaleDateString();
         node.querySelector('.dl').href = ep.audio;
+
         const audio = node.querySelector('.player');
         audio.src = ep.audio;
+
         node.querySelector('.playEp').addEventListener('click',()=>{
           if(audio.paused){ audio.classList.remove('hide'); audio.play(); }
           else { audio.pause(); }
@@ -261,12 +339,12 @@
         list.appendChild(node);
       });
 
-      // next up
+      // Next Up card (uses logo fallback too)
       const up = $('#upNext');
       const next = sampleEpisodes[0];
       up.innerHTML = `
         <div class="card pad" style="display:flex;gap:12px;align-items:center;background:#0d1324;border:1px solid #1b2341;border-radius:14px">
-          <img src="${next.img}" alt="" style="width:90px;height:70px;object-fit:cover;border-radius:10px" />
+          <img id="upImg" src="${next.img}" alt="" style="width:90px;height:70px;object-fit:cover;border-radius:10px" />
           <div style="flex:1">
             <div class="eyebrow">Up Next</div>
             <div>${next.title}</div>
@@ -275,6 +353,7 @@
           <button class="btn" id="playNext">▶ Play</button>
         </div>
       `;
+      const upImg = $('#upImg'); upImg.onerror = ()=> upImg.src='/logo.png';
       $('#playNext').onclick = ()=> {
         const first = $('#archiveList audio');
         if(first){ first.classList.remove('hide'); first.play(); window.scrollTo({top: document.body.scrollHeight, behavior:'smooth'}); }
@@ -342,7 +421,7 @@
 
       function money(n){ return '$'+n.toFixed(2); }
       function drawCart(){
-        const c = store.cart;
+        const c = store.cart || [];
         const box = $('#cartList');
         box.innerHTML = '';
         let total = 0;
@@ -355,7 +434,6 @@
             <div>${money(item.price*item.qty)}</div>
           `;
           row.onclick = ()=>{
-            // click to remove one
             const copy = [...store.cart];
             copy[i].qty -= 1;
             if(copy[i].qty<=0) copy.splice(i,1);
@@ -368,12 +446,16 @@
 
       sampleProducts.forEach(p=>{
         const node = document.importNode(tpl,true);
-        node.querySelector('img').src = p.img;
+        const img = node.querySelector('img');
+        img.src = p.img;
+        img.alt = p.name;
+        img.onerror = () => { img.src = '/logo.png'; }; // logo fallback
+
         node.querySelector('.pname').textContent = p.name;
         node.querySelector('.pdesc').textContent = p.desc;
         node.querySelector('.price').textContent = money(p.price);
         node.querySelector('.add').onclick = ()=>{
-          const c = store.cart;
+          const c = store.cart || [];
           const found = c.find(x=>x.name===p.name);
           if(found) found.qty += 1; else c.push({...p, qty:1});
           store.cart = c; drawCart();
