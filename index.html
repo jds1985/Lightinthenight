@@ -98,6 +98,25 @@
     .cart-item{display:flex;justify-content:space-between;gap:8px}
     .muted{color:var(--muted)}
     @media (max-width:900px){.hero{grid-template-columns:1fr}}
+
+    /* ===== Wandering Crow Agent ===== */
+    .crow-agent{
+      position:fixed; left:20px; top:120px; width:72px; height:48px;
+      z-index:60; pointer-events:none;
+      transform: translate(20px,120px) rotate(0deg);
+      transition-property: transform; transition-timing-function: cubic-bezier(.2,.8,.2,1);
+      filter: drop-shadow(0 4px 10px rgba(0,0,0,.35));
+    }
+    .crow-agent .wing{ transform-origin: 60px 46px; animation: flap .45s ease-in-out infinite; animation-play-state: paused; }
+    .crow-agent.flying .wing{ animation-play-state: running; }
+    @keyframes flap{ 0%,100%{ transform: rotate(0deg);} 50%{ transform: rotate(16deg);} }
+    .beak-upper{ transform-origin: 100px 32px; }
+    .cawing .beak-upper{ animation: beakOpen .7s ease-out 1; }
+    @keyframes beakOpen{ 0%{ transform: rotate(0);} 25%{ transform: rotate(-18deg);} 55%{ transform: rotate(-18deg);} 100%{ transform: rotate(0);} }
+    @media (prefers-reduced-motion: reduce){
+      .crow-agent{ transition-duration: 0s !important }
+      .crow-agent .wing{ animation: none !important }
+    }
   </style>
 </head>
 <body>
@@ -137,6 +156,28 @@
 
     <footer>© <span id="year"></span> Light in the Night. All rights reserved.</footer>
   </div>
+
+  <!-- Wandering Crow Agent -->
+  <div id="crowAgent" class="crow-agent" aria-hidden="true" title="crow">
+    <svg viewBox="0 0 120 80" width="100%" height="100%">
+      <g id="crowBody" fill="#0a0a0a">
+        <ellipse cx="60" cy="46" rx="34" ry="18"></ellipse>
+        <circle cx="90" cy="36" r="12"></circle>
+        <circle cx="94" cy="33" r="2" fill="#fff"></circle>
+        <g id="beakUpper" class="beak-upper"><polygon points="100,36 118,32 100,28"></polygon></g>
+        <polygon points="100,38 118,40 100,44"></polygon>
+        <rect x="58" y="58" width="4" height="12"></rect>
+        <rect x="70" y="59" width="4" height="12"></rect>
+      </g>
+      <g class="wing wingL" fill="#0a0a0a"><path d="M30,44 q-22 -10 -24 -16 q10 4 30 0 q-4 6 -6 16z"></path></g>
+      <g class="wing wingR" fill="#0a0a0a"><path d="M60,44 q30 -6 40 -18 q-8 16 -30 26 q-4 -4 -10 -8z"></path></g>
+    </svg>
+  </div>
+
+  <!-- Optional audio; place crow.mp3 next to index.html -->
+  <audio id="crowCawAudio" preload="auto">
+    <source src="crow.mp3" type="audio/mpeg">
+  </audio>
 
   <!-- =================== TEMPLATES =================== -->
   <template id="homeTpl">
@@ -245,11 +286,14 @@
     </div>
   </template>
 
+  <audio id="crowCawAudio2" preload="auto">
+    <source src="crow.mp3" type="audio/mpeg">
+  </audio>
+
   <script>
     const $ = s => document.querySelector(s);
     const $$ = s => [...document.querySelectorAll(s)];
     const view = $('#view');
-    const nav = $('#nav');
 
     // Body padding when mobile bar is present
     function applyMobileBarFlag(){
@@ -303,7 +347,8 @@
     // Router
     function route(){
       const r = (location.hash.replace('#','') || 'home').toLowerCase();
-      $$('#nav a, .mobile-bar .mini-tabs a').forEach(a => a.classList.toggle('active', a.dataset.route===r));
+      [...document.querySelectorAll('#nav a, .mobile-bar .mini-tabs a')]
+        .forEach(a => a.classList.toggle('active', a.dataset.route===r));
       if(r==='home') renderHome();
       else if(r==='blog') renderBlog();
       else if(r==='store') renderStore();
@@ -324,14 +369,11 @@
         img.src = ep.img;
         img.alt = ep.title;
         img.onerror = () => { img.src = '/logo.png'; };
-
         node.querySelector('h4').textContent = ep.title;
         node.querySelector('time').textContent = new Date(ep.date).toLocaleDateString();
         node.querySelector('.dl').href = ep.audio;
-
         const audio = node.querySelector('.player');
         audio.src = ep.audio;
-
         node.querySelector('.playEp').addEventListener('click',()=>{
           if(audio.paused){ audio.classList.remove('hide'); audio.play(); }
           else { audio.pause(); }
@@ -339,7 +381,6 @@
         list.appendChild(node);
       });
 
-      // Next Up card (uses logo fallback too)
       const up = $('#upNext');
       const next = sampleEpisodes[0];
       up.innerHTML = `
@@ -359,7 +400,6 @@
         if(first){ first.classList.remove('hide'); first.play(); window.scrollTo({top: document.body.scrollHeight, behavior:'smooth'}); }
       };
 
-      // live controls
       const live = $('#liveAudio');
       $('#toggleLive').onclick = ()=> live.paused ? live.play() : live.pause();
       $('#subApple').onclick = ()=> alert('Hook this to your Apple Podcasts link.');
@@ -379,9 +419,7 @@
           node.querySelector('h3').textContent = p.title;
           node.querySelector('.meta').textContent = new Date(p.ts).toLocaleString();
           node.querySelector('.body').textContent = p.body;
-          const editBtn = node.querySelector('.edit');
-          const removeBtn = node.querySelector('.remove');
-          editBtn.onclick = ()=>{
+          node.querySelector('.edit').onclick = ()=>{
             const newTitle = prompt('Edit title:', p.title);
             if(newTitle===null) return;
             const newBody = prompt('Edit body:', p.body);
@@ -389,7 +427,7 @@
             store.posts = store.posts.map((x,idx)=> idx===i ? ({...x, title:newTitle, body:newBody}) : x);
             draw();
           };
-          removeBtn.onclick = ()=>{
+          node.querySelector('.remove').onclick = ()=>{
             if(confirm('Delete this post?')){
               store.posts = store.posts.filter((_,idx)=> idx!==i);
               draw();
@@ -450,7 +488,6 @@
         img.src = p.img;
         img.alt = p.name;
         img.onerror = () => { img.src = '/logo.png'; }; // logo fallback
-
         node.querySelector('.pname').textContent = p.name;
         node.querySelector('.pdesc').textContent = p.desc;
         node.querySelector('.price').textContent = money(p.price);
@@ -468,6 +505,88 @@
       };
       drawCart();
     }
+
+    // ===== Wandering Crow Agent logic =====
+    (() => {
+      const crow = document.getElementById('crowAgent');
+      const audio = document.getElementById('crowCawAudio');
+      const audio2 = document.getElementById('crowCawAudio2'); // second tag as fallback
+
+      const SPEED = 260; // px/sec
+      const PADDING = 24;
+      let busy = false;
+
+      function vw(){ return Math.max(document.documentElement.clientWidth, window.innerWidth || 0); }
+      function vh(){ return Math.max(document.documentElement.clientHeight, window.innerHeight || 0); }
+      function random(min,max){ return Math.random()*(max-min)+min; }
+      function pickSpot(){ return { x: random(PADDING, vw()-PADDING-72), y: random(80, vh()-PADDING-48) }; }
+
+      function moveTo({x,y}){
+        busy = true; crow.classList.add('flying');
+        const rect = crow.getBoundingClientRect();
+        const cx = rect.left, cy = rect.top;
+        const dx = x - cx, dy = y - cy;
+        const dist = Math.hypot(dx, dy);
+        const angle = Math.atan2(dy, dx) * 180/Math.PI;
+        const dur = Math.max(0.8, Math.min(4, dist / SPEED));
+        crow.style.transitionDuration = dur + 's';
+        crow.style.transform = `translate(${x}px, ${y}px) rotate(${angle}deg)`;
+        const onEnd = () => {
+          crow.removeEventListener('transitionend', onEnd);
+          crow.classList.remove('flying');
+          busy = false;
+          if(Math.random() < 0.5) caw();
+          scheduleNext();
+        };
+        crow.addEventListener('transitionend', onEnd, {once:true});
+      }
+
+      function caw(){
+        crow.classList.add('cawing');
+        const a = (audio && audio.readyState > 0) ? audio : audio2;
+        if(a && a.readyState > 0){
+          try{ a.currentTime = 0; a.play().catch(()=>{});}catch(e){}
+        }
+        setTimeout(()=> crow.classList.remove('cawing'), 720);
+      }
+
+      function hop(){
+        if(busy) return;
+        busy = true;
+        const rect = crow.getBoundingClientRect();
+        const x = rect.left + random(-18, 18);
+        const y = rect.top + random(-8, 8);
+        crow.style.transitionDuration = '0.35s';
+        crow.style.transform = `translate(${x}px, ${y}px) rotate(${random(-10,10)}deg)`;
+        setTimeout(()=>{ busy=false; scheduleNext(); }, 380);
+      }
+
+      function scheduleNext(){
+        const delay = random(1200, 3800);
+        setTimeout(()=>{
+          if(Math.random() < 0.4) hop();
+          else moveTo(pickSpot());
+        }, delay);
+      }
+
+      function randomCawLoop(){
+        setTimeout(()=>{
+          if(!busy && Math.random() < 0.7) caw();
+          randomCawLoop();
+        }, random(4000, 9000));
+      }
+
+      const start = pickSpot();
+      crow.style.transform = `translate(${start.x}px, ${start.y}px) rotate(${random(-20,20)}deg)`;
+      scheduleNext(); randomCawLoop();
+
+      window.addEventListener('resize', () => {
+        const rect = crow.getBoundingClientRect();
+        const x = Math.min(Math.max(rect.left, PADDING), vw()-PADDING-72);
+        const y = Math.min(Math.max(rect.top, 80), vh()-PADDING-48);
+        crow.style.transform = `translate(${x}px, ${y}px)`;
+      });
+    })();
 
     // boot
     $('#year').textContent = new Date().getFullYear();
