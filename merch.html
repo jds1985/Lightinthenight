@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Podcast Merch</title>
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; background: #111; color: #fff; }
+    header { background: #222; padding: 1rem; display: flex; align-items: center; justify-content: space-between; }
+    header img { height: 60px; }
+    nav a { color: #fff; margin: 0 10px; text-decoration: none; font-weight: bold; }
+    nav a:hover { color: #f90; }
+    main { padding: 2rem; max-width: 900px; margin: auto; }
+    .product { background: #222; padding: 1rem; border-radius: 8px; margin: 1rem; display: inline-block; width: 250px; vertical-align: top; }
+    .product img { width: 100%; border-radius: 8px; }
+    .product button { background: #f90; border: none; padding: 0.5rem 1rem; margin-top: 0.5rem; border-radius: 4px; cursor: pointer; }
+    .product button:hover { background: #c60; }
+    #crow { position: absolute; width: 64px; height: 64px; background: url('images/crow-sprite.png'); background-size: cover; }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="images/logo.png" alt="Logo">
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="blog.html">Blog</a>
+      <a href="merch.html">Merch</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Merchandise</h1>
+    <div class="product">
+      <img src="images/shirt-placeholder.png" alt="T-Shirt">
+      <h3>Podcast T-Shirt</h3>
+      <p>$20.00</p>
+      <button>Add to Cart</button>
+    </div>
+    <div class="product">
+      <img src="images/mug-placeholder.png" alt="Mug">
+      <h3>Podcast Mug</h3>
+      <p>$12.00</p>
+      <button>Add to Cart</button>
+    </div>
+  </main>
+
+  <div id="crow"></div>
+  <audio id="crowSound" src="sounds/crow.mp3"></audio>
+  <!-- Sound Effect by freesound_community from Pixabay -->
+
+  <script>
+    const crow = document.getElementById("crow");
+    const sound = document.getElementById("crowSound");
+    function moveCrow() {
+      const x = Math.random() * (window.innerWidth - 64);
+      const y = Math.random() * (window.innerHeight - 64);
+      crow.style.transform = `translate(${x}px, ${y}px)`;
+    }
+    function randomSqawk() {
+      if (Math.random() < 0.3) sound.play();
+    }
+    setInterval(() => { moveCrow(); randomSqawk(); }, 4000);
+    moveCrow();
+  </script>
+</body>
+</html>
