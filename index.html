@@ -1,596 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Light in the Night — Podcast · Blog · Merch</title>
-  <meta name="description" content="Light in the Night — listen live, browse archives, read the blog, and grab merch." />
+  <meta charset="UTF-8">
+  <title>Podcast Home</title>
   <style>
-    :root{
-      --bg:#0b0b0f; --panel:#11131a; --panel-2:#171926; --ink:#e9eefc; --muted:#a9b2d5;
-      --accent:#5CF45F; --accent-2:#62a4ff; --danger:#ff6a6a; --shadow: 0 10px 30px rgba(0,0,0,.35);
-      --radius:18px; --glass: rgba(12,16,30,.65);
+    body {
+      margin: 0; font-family: Arial, sans-serif;
+      background: #111; color: #fff; text-align: center;
     }
-    *{box-sizing:border-box}
-    html,body{margin:0;background:linear-gradient(180deg,#0b0b0f,#0e1220 70%);color:var(--ink);font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
-    a{color:var(--accent-2);text-decoration:none}
-    img{max-width:100%;display:block}
-
-    /* Layout shell */
-    .shell{max-width:1100px;margin:auto;padding:16px 18px}
-
-    /* ===== MOBILE TOP BAR (always visible on phones) ===== */
-    .mobile-bar{
-      position:fixed; inset:0 0 auto 0; height:56px; display:flex; align-items:center; gap:10px;
-      padding:8px 12px; background:var(--glass); backdrop-filter: blur(10px);
-      border-bottom:1px solid #1e2440; z-index:50;
+    header {
+      background: #222; padding: 1rem;
+      display: flex; align-items: center; justify-content: space-between;
     }
-    .mobile-bar img{width:36px;height:36px;border-radius:50%; background:#0f1423}
-    .mobile-bar .title{font-weight:700}
-    .mobile-bar .spacer{flex:1}
-    .mobile-bar .mini-tabs{display:flex; gap:6px}
-    .mobile-bar .mini-tabs a{
-      padding:6px 10px;border-radius:999px;background:#0f1320;color:var(--ink);
-      border:1px solid #1e2440; font-size:13px
+    header img { height: 60px; }
+    nav a {
+      color: #fff; margin: 0 10px; text-decoration: none; font-weight: bold;
     }
-    @media (min-width:720px){ .mobile-bar{display:none} }
-
-    /* Add top padding so content doesn't hide under the mobile bar */
-    body.has-mobilebar .shell{padding-top:72px}
-
-    /* ===== Header (auto-shrinks on scroll) ===== */
-    .hdr{display:grid;grid-template-columns:1fr;gap:12px;padding:12px 0}
-    .brand{display:flex;align-items:center;gap:12px;min-width:0}
-    .logo{width:72px;height:72px;border-radius:50%;box-shadow:var(--shadow);flex:0 0 auto;background:#0f1423}
-    .title h1{margin:0;color:var(--ink);font-size:clamp(22px,4.5vw,40px);line-height:1.1}
-    .title .eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
-    .hdr.compact .logo{width:48px;height:48px;transition:width .18s,height .18s}
-    .hdr.compact .title h1{font-size:clamp(20px,4vw,34px);transition:font-size .18s}
-
-    /* Tabs: sticky + blur glass */
-    .tabs{
-      position: sticky; top: 64px; z-index: 40;
-      display:grid; grid-auto-flow:column; grid-auto-columns:1fr; gap:8px;
-      background:var(--glass); backdrop-filter: blur(10px);
-      padding:6px; border-radius:999px; border:1px solid #1e2440;
-    }
-    .tabs a{padding:10px 14px;border-radius:999px;background:#0f1320;color:var(--ink);
-            border:1px solid #1e2440;text-align:center;white-space:nowrap}
-    .tabs a.active{background:var(--accent-2);color:#02040a}
-    @media (min-width:720px){
-      .hdr{grid-template-columns:auto 1fr;align-items:center}
-      .tabs{top: 0; justify-self:end; grid-auto-columns:auto}
-    }
-
-    /* Common UI */
-    .hero{display:grid;grid-template-columns:1.1fr .9fr;gap:20px;align-items:stretch}
-    .card{background:var(--panel);border:1px solid #1e2440;border-radius:var(--radius);box-shadow:var(--shadow)}
-    .pad{padding:18px}
-    h1,h2,h3{margin:0 0 10px}
-    .eyebrow{color:var(--muted);font-size:12px;letter-spacing:.14em;text-transform:uppercase}
-    .live-badge{display:inline-flex;align-items:center;gap:8px;background:#1b2138;border:1px solid #2a355e;color:#eaefff;padding:8px 12px;border-radius:999px}
-    .dot{width:10px;height:10px;border-radius:50%;background:#ff5555;box-shadow:0 0 0 6px rgba(255,85,85,.12);animation:pulse 1.6s infinite}
-    @keyframes pulse{0%{box-shadow:0 0 0 6px rgba(255,85,85,.12)}50%{box-shadow:0 0 0 12px rgba(255,85,85,.06)}100%{box-shadow:0 0 0 6px rgba(255,85,85,.12)}}
-    .stack{display:flex;flex-direction:column;gap:14px}
-    .list{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
-    .episode{background:var(--panel-2);border:1px solid #222a48;border-radius:14px;overflow:hidden}
-    .episode .meta{padding:12px 14px}
-    .episode h4{margin:0 0 6px;font-size:16px}
-    .episode time{color:var(--muted);font-size:12px}
-    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 14px;border-radius:12px;border:1px solid #2a355e;background:#131a2d;color:#eaf0ff;cursor:pointer}
-    .btn.primary{background:var(--accent);color:#031304;border-color:#2f7e35}
-    .btn.ghost{background:transparent;border-color:#2a355e;color:var(--ink)}
-    .row{display:flex;gap:10px;flex-wrap:wrap}
-    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-    .hide{display:none}
-    footer{margin:50px 0 20px;color:#94a0c9;font-size:13px}
-    /* blog */
-    .post{background:var(--panel);border:1px solid #1e2440;border-radius:var(--radius);padding:18px}
-    .post h3{margin-bottom:6px}
-    .post .meta{color:var(--muted);font-size:12px;margin-bottom:10px}
-    .editor textarea{width:100%;min-height:110px;background:#0f1423;color:var(--ink);border:1px solid #243054;border-radius:12px;padding:10px}
-    /* store */
-    .product{background:var(--panel);border:1px solid #1e2440;border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
-    .product .pad{flex:1}
-    .price{font-weight:800}
-    .cart{position:sticky;top:12px}
-    .cart-list{display:flex;flex-direction:column;gap:10px}
-    .cart-item{display:flex;justify-content:space-between;gap:8px}
-    .muted{color:var(--muted)}
-    @media (max-width:900px){.hero{grid-template-columns:1fr}}
-
-    /* ===== Wandering Crow Agent ===== */
-    .crow-agent{
-      position:fixed; left:20px; top:120px; width:72px; height:48px;
-      z-index:60; pointer-events:none;
-      transform: translate(20px,120px) rotate(0deg);
-      transition-property: transform; transition-timing-function: cubic-bezier(.2,.8,.2,1);
-      filter: drop-shadow(0 4px 10px rgba(0,0,0,.35));
-    }
-    .crow-agent .wing{ transform-origin: 60px 46px; animation: flap .45s ease-in-out infinite; animation-play-state: paused; }
-    .crow-agent.flying .wing{ animation-play-state: running; }
-    @keyframes flap{ 0%,100%{ transform: rotate(0deg);} 50%{ transform: rotate(16deg);} }
-    .beak-upper{ transform-origin: 100px 32px; }
-    .cawing .beak-upper{ animation: beakOpen .7s ease-out 1; }
-    @keyframes beakOpen{ 0%{ transform: rotate(0);} 25%{ transform: rotate(-18deg);} 55%{ transform: rotate(-18deg);} 100%{ transform: rotate(0);} }
-    @media (prefers-reduced-motion: reduce){
-      .crow-agent{ transition-duration: 0s !important }
-      .crow-agent .wing{ animation: none !important }
+    nav a:hover { color: #f90; }
+    main { padding: 2rem; }
+    .archived { margin-top: 2rem; }
+    /* Crow sprite */
+    #crow {
+      position: absolute; width: 64px; height: 64px;
+      background: url('images/crow-sprite.png') left center;
+      background-size: cover;
     }
   </style>
 </head>
 <body>
-  <!-- MOBILE TOP BAR -->
-  <div class="mobile-bar">
-    <img src="/logo.png" alt="Logo" onerror="this.style.visibility='hidden'">
-    <div class="title">Light in the Night</div>
-    <div class="spacer"></div>
-    <div class="mini-tabs">
-      <a href="#home" data-route="home">Podcast</a>
-      <a href="#blog" data-route="blog">Blog</a>
-      <a href="#store" data-route="store">Merch</a>
+  <header>
+    <img src="images/logo.png" alt="Logo">
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="blog.html">Blog</a>
+      <a href="merch.html">Merch</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>🎙 Live Podcast</h1>
+    <audio controls autoplay>
+      <source src="sounds/live-placeholder.mp3" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+
+    <div class="archived">
+      <h2>Archived Episodes</h2>
+      <ul>
+        <li><a href="#">Episode 1 - Intro</a></li>
+        <li><a href="#">Episode 2 - Guest Interview</a></li>
+        <li><a href="#">Episode 3 - Deep Dive</a></li>
+      </ul>
     </div>
-  </div>
+  </main>
 
-  <div class="shell">
-    <!-- HEADER -->
-    <header class="hdr" id="hdr">
-      <div class="brand">
-        <img src="/logo.png" alt="Light in the Night logo" class="logo" onerror="this.classList.add('hide')" />
-        <div class="title">
-          <div class="eyebrow">Light in the Night</div>
-          <h1>Podcast · Blog · Merch</h1>
-        </div>
-      </div>
-
-      <!-- Sticky tabs -->
-      <nav id="nav" class="tabs">
-        <a href="#home" data-route="home">Podcast</a>
-        <a href="#blog" data-route="blog">Blog</a>
-        <a href="#store" data-route="store">Merch</a>
-      </nav>
-    </header>
-
-    <!-- ROUTES -->
-    <main id="view" class="stack"></main>
-
-    <footer>© <span id="year"></span> Light in the Night. All rights reserved.</footer>
-  </div>
-
-  <!-- Wandering Crow Agent -->
-  <div id="crowAgent" class="crow-agent" aria-hidden="true" title="crow">
-    <svg viewBox="0 0 120 80" width="100%" height="100%">
-      <g id="crowBody" fill="#0a0a0a">
-        <ellipse cx="60" cy="46" rx="34" ry="18"></ellipse>
-        <circle cx="90" cy="36" r="12"></circle>
-        <circle cx="94" cy="33" r="2" fill="#fff"></circle>
-        <g id="beakUpper" class="beak-upper"><polygon points="100,36 118,32 100,28"></polygon></g>
-        <polygon points="100,38 118,40 100,44"></polygon>
-        <rect x="58" y="58" width="4" height="12"></rect>
-        <rect x="70" y="59" width="4" height="12"></rect>
-      </g>
-      <g class="wing wingL" fill="#0a0a0a"><path d="M30,44 q-22 -10 -24 -16 q10 4 30 0 q-4 6 -6 16z"></path></g>
-      <g class="wing wingR" fill="#0a0a0a"><path d="M60,44 q30 -6 40 -18 q-8 16 -30 26 q-4 -4 -10 -8z"></path></g>
-    </svg>
-  </div>
-
-  <!-- Optional audio; place crow.mp3 next to index.html -->
-  <audio id="crowCawAudio" preload="auto">
-    <source src="crow.mp3" type="audio/mpeg">
-  </audio>
-
-  <!-- =================== TEMPLATES =================== -->
-  <template id="homeTpl">
-    <section class="hero">
-      <div class="card pad stack">
-        <div class="row" style="justify-content:space-between;align-items:center">
-          <span class="live-badge"><span class="dot"></span> Live Broadcast</span>
-          <button class="btn ghost" id="toggleLive">Play/Pause</button>
-        </div>
-        <div class="card" style="background:#0d1324;border:1px solid #1b2341;border-radius:14px">
-          <audio id="liveAudio" controls style="width:100%" crossorigin="anonymous">
-            <!-- Replace with your real live stream URL -->
-            <source src="https://stream.live-example.com/your-stream-url.mp3" type="audio/mpeg">
-            Your browser does not support the audio element.
-          </audio>
-        </div>
-        <p class="muted">Tip: replace the stream URL with your real live stream (Icecast/Shoutcast/Radio.co/etc.).</p>
-      </div>
-
-      <div class="card pad stack">
-        <h2>Next Up</h2>
-        <div id="upNext" class="stack"></div>
-        <div class="row">
-          <button class="btn" id="subApple">Subscribe (Apple)</button>
-          <button class="btn" id="subSpotify">Subscribe (Spotify)</button>
-        </div>
-      </div>
-    </section>
-
-    <section class="stack">
-      <h2>Archive</h2>
-      <div class="list" id="archiveList"></div>
-    </section>
-  </template>
-
-  <template id="archiveCardTpl">
-    <article class="episode">
-      <img alt="" />
-      <div class="meta">
-        <h4></h4>
-        <time></time>
-        <div class="row" style="margin-top:8px">
-          <button class="btn playEp">▶ Play</button>
-          <a class="btn ghost dl" download>Download</a>
-        </div>
-        <audio class="player hide" preload="metadata"></audio>
-      </div>
-    </article>
-  </template>
-
-  <template id="blogTpl">
-    <section class="grid-2">
-      <div class="stack" id="postList"></div>
-      <aside class="stack editor">
-        <div class="card pad">
-          <h3>New Post</h3>
-          <input id="postTitle" placeholder="Post title" class="btn" style="width:100%;background:#0f1423;border-color:#243054;margin:8px 0" />
-          <textarea id="postBody" placeholder="Write something…"></textarea>
-          <button class="btn primary" id="publish">Publish</button>
-          <p class="muted" style="margin-top:6px">Posts are saved locally in your browser (no server required).</p>
-        </div>
-      </aside>
-    </section>
-  </template>
-
-  <template id="postTpl">
-    <article class="post">
-      <h3></h3>
-      <div class="meta"></div>
-      <div class="body"></div>
-      <div class="row" style="margin-top:10px">
-        <button class="btn ghost edit">Edit</button>
-        <button class="btn" style="background:#ffb84d;color:#201400" class="save hide">Save</button>
-        <button class="btn" style="background:var(--danger);border-color:#8a2f2f" class="remove">Delete</button>
-      </div>
-    </article>
-  </template>
-
-  <template id="storeTpl">
-    <section class="grid-2">
-      <div class="stack" id="products"></div>
-      <aside class="card pad cart">
-        <h3>Your Cart</h3>
-        <div class="cart-list" id="cartList"></div>
-        <div class="row" style="margin-top:10px;justify-content:space-between">
-          <div class="muted">Total:</div>
-          <div id="cartTotal" class="price">$0.00</div>
-        </div>
-        <button class="btn primary" id="checkout" style="margin-top:10px">Checkout</button>
-        <p class="muted" style="margin-top:6px">Demo checkout only — connect Stripe later.</p>
-      </aside>
-    </section>
-  </template>
-
-  <template id="productTpl">
-    <div class="product">
-      <img alt="" />
-      <div class="pad">
-        <h3 class="pname"></h3>
-        <p class="muted pdesc"></p>
-        <div class="row" style="justify-content:space-between;align-items:center;margin-top:6px">
-          <div class="price"></div>
-          <button class="btn add">Add to Cart</button>
-        </div>
-      </div>
-    </div>
-  </template>
-
-  <audio id="crowCawAudio2" preload="auto">
-    <source src="crow.mp3" type="audio/mpeg">
-  </audio>
+  <div id="crow"></div>
+  <audio id="crowSound" src="sounds/crow.mp3"></audio>
+  <!-- Sound Effect by freesound_community from Pixabay -->
 
   <script>
-    const $ = s => document.querySelector(s);
-    const $$ = s => [...document.querySelectorAll(s)];
-    const view = $('#view');
-
-    // Body padding when mobile bar is present
-    function applyMobileBarFlag(){
-      document.body.classList.toggle('has-mobilebar', window.innerWidth < 720);
+    const crow = document.getElementById("crow");
+    const sound = document.getElementById("crowSound");
+    function moveCrow() {
+      const x = Math.random() * (window.innerWidth - 64);
+      const y = Math.random() * (window.innerHeight - 64);
+      crow.style.transform = `translate(${x}px, ${y}px)`;
     }
-    window.addEventListener('resize', applyMobileBarFlag);
-    applyMobileBarFlag();
-
-    // Shrink header on scroll
-    const hdr = $('#hdr');
-    window.addEventListener('scroll', () => {
-      hdr.classList.toggle('compact', window.scrollY > 40);
-    });
-
-    const sampleEpisodes = [
-      {
-        title: 'Ep 01 — First Night, First Light',
-        date: '2025-08-01',
-        img: 'https://picsum.photos/seed/ln01/600/360',
-        audio: 'https://file-examples.com/storage/fe5f2e2e5c3fa1b6b6a24d6/2017/11/file_example_MP3_700KB.mp3'
-      },
-      {
-        title: 'Ep 02 — Crows & Constellations',
-        date: '2025-08-08',
-        img: 'https://picsum.photos/seed/ln02/600/360',
-        audio: 'https://file-examples.com/storage/fe5f2e2e5c3fa1b6b6a24d6/2017/11/file_example_MP3_1MG.mp3'
-      },
-      {
-        title: 'Ep 03 — Sleeping on Starlight',
-        date: '2025-08-13',
-        img: 'https://picsum.photos/seed/ln03/600/360',
-        audio: 'https://file-examples.com/storage/fe5f2e2e5c3fa1b6b6a24d6/2017/11/file_example_MP3_2MG.mp3'
-      }
-    ];
-
-    const sampleProducts = [
-      {name:'Logo Tee (Black)', desc:'Soft cotton tee with the Light in the Night crest.', price:24.00, img:'https://picsum.photos/seed/shirt/800/600'},
-      {name:'Crescent Cap', desc:'Night-sky embroidered hat.', price:28.00, img:'https://picsum.photos/seed/hat/800/600'},
-      {name:'Skunk Sticker Pack', desc:'Glossy vinyl stickers (5 pack).', price:8.00, img:'https://picsum.photos/seed/stickers/800/600'},
-      {name:'Crow Mug', desc:'12oz ceramic mug — glow ink.', price:18.00, img:'https://picsum.photos/seed/mug/800/600'}
-    ];
-
-    const store = {
-      get posts(){ return JSON.parse(localStorage.getItem('lin_posts')||'[]') },
-      set posts(v){ localStorage.setItem('lin_posts', JSON.stringify(v)) },
-
-      get cart(){ return JSON.parse(localStorage.getItem('lin_cart')||'[]') },
-      set cart(v){ localStorage.setItem('lin_cart', JSON.stringify(v)) }
-    };
-
-    // Router
-    function route(){
-      const r = (location.hash.replace('#','') || 'home').toLowerCase();
-      [...document.querySelectorAll('#nav a, .mobile-bar .mini-tabs a')]
-        .forEach(a => a.classList.toggle('active', a.dataset.route===r));
-      if(r==='home') renderHome();
-      else if(r==='blog') renderBlog();
-      else if(r==='store') renderStore();
-      else renderHome();
+    function randomSqawk() {
+      if (Math.random() < 0.3) sound.play();
     }
-    window.addEventListener('hashchange', route);
-
-    // HOME / Podcast
-    function renderHome(){
-      view.innerHTML = $('#homeTpl').innerHTML;
-
-      const list = $('#archiveList');
-      const tpl = $('#archiveCardTpl').content;
-
-      sampleEpisodes.forEach(ep=>{
-        const node = document.importNode(tpl,true);
-        const img = node.querySelector('img');
-        img.src = ep.img;
-        img.alt = ep.title;
-        img.onerror = () => { img.src = '/logo.png'; };
-        node.querySelector('h4').textContent = ep.title;
-        node.querySelector('time').textContent = new Date(ep.date).toLocaleDateString();
-        node.querySelector('.dl').href = ep.audio;
-        const audio = node.querySelector('.player');
-        audio.src = ep.audio;
-        node.querySelector('.playEp').addEventListener('click',()=>{
-          if(audio.paused){ audio.classList.remove('hide'); audio.play(); }
-          else { audio.pause(); }
-        });
-        list.appendChild(node);
-      });
-
-      const up = $('#upNext');
-      const next = sampleEpisodes[0];
-      up.innerHTML = `
-        <div class="card pad" style="display:flex;gap:12px;align-items:center;background:#0d1324;border:1px solid #1b2341;border-radius:14px">
-          <img id="upImg" src="${next.img}" alt="" style="width:90px;height:70px;object-fit:cover;border-radius:10px" />
-          <div style="flex:1">
-            <div class="eyebrow">Up Next</div>
-            <div>${next.title}</div>
-            <div class="muted">${new Date(next.date).toLocaleDateString()}</div>
-          </div>
-          <button class="btn" id="playNext">▶ Play</button>
-        </div>
-      `;
-      const upImg = $('#upImg'); upImg.onerror = ()=> upImg.src='/logo.png';
-      $('#playNext').onclick = ()=> {
-        const first = $('#archiveList audio');
-        if(first){ first.classList.remove('hide'); first.play(); window.scrollTo({top: document.body.scrollHeight, behavior:'smooth'}); }
-      };
-
-      const live = $('#liveAudio');
-      $('#toggleLive').onclick = ()=> live.paused ? live.play() : live.pause();
-      $('#subApple').onclick = ()=> alert('Hook this to your Apple Podcasts link.');
-      $('#subSpotify').onclick = ()=> alert('Hook this to your Spotify link.');
-    }
-
-    // BLOG
-    function renderBlog(){
-      view.innerHTML = $('#blogTpl').innerHTML;
-      const list = $('#postList');
-      const tpl = $('#postTpl').content;
-
-      function draw(){
-        list.innerHTML = '';
-        store.posts.forEach((p,i)=>{
-          const node = document.importNode(tpl,true);
-          node.querySelector('h3').textContent = p.title;
-          node.querySelector('.meta').textContent = new Date(p.ts).toLocaleString();
-          node.querySelector('.body').textContent = p.body;
-          node.querySelector('.edit').onclick = ()=>{
-            const newTitle = prompt('Edit title:', p.title);
-            if(newTitle===null) return;
-            const newBody = prompt('Edit body:', p.body);
-            if(newBody===null) return;
-            store.posts = store.posts.map((x,idx)=> idx===i ? ({...x, title:newTitle, body:newBody}) : x);
-            draw();
-          };
-          node.querySelector('.remove').onclick = ()=>{
-            if(confirm('Delete this post?')){
-              store.posts = store.posts.filter((_,idx)=> idx!==i);
-              draw();
-            }
-          };
-          list.appendChild(node);
-        });
-        if(!store.posts.length){
-          list.innerHTML = `<div class="post"><div class="muted">No posts yet. Write one on the right →</div></div>`;
-        }
-      }
-      draw();
-
-      $('#publish').onclick = ()=>{
-        const title = $('#postTitle').value.trim();
-        const body = $('#postBody').value.trim();
-        if(!title || !body){ alert('Please add a title and some text.'); return; }
-        store.posts = [{title, body, ts:Date.now()}, ...store.posts];
-        $('#postTitle').value=''; $('#postBody').value='';
-        draw();
-      };
-    }
-
-    // STORE
-    function renderStore(){
-      view.innerHTML = $('#storeTpl').innerHTML;
-      const list = $('#products');
-      const tpl = $('#productTpl').content;
-
-      function money(n){ return '$'+n.toFixed(2); }
-      function drawCart(){
-        const c = store.cart || [];
-        const box = $('#cartList');
-        box.innerHTML = '';
-        let total = 0;
-        c.forEach((item,i)=>{
-          total += item.price * item.qty;
-          const row = document.createElement('div');
-          row.className = 'cart-item';
-          row.innerHTML = `
-            <div><strong>${item.name}</strong> <span class="muted">×${item.qty}</span></div>
-            <div>${money(item.price*item.qty)}</div>
-          `;
-          row.onclick = ()=>{
-            const copy = [...store.cart];
-            copy[i].qty -= 1;
-            if(copy[i].qty<=0) copy.splice(i,1);
-            store.cart = copy; drawCart();
-          };
-          box.appendChild(row);
-        });
-        $('#cartTotal').textContent = money(total);
-      }
-
-      sampleProducts.forEach(p=>{
-        const node = document.importNode(tpl,true);
-        const img = node.querySelector('img');
-        img.src = p.img;
-        img.alt = p.name;
-        img.onerror = () => { img.src = '/logo.png'; }; // logo fallback
-        node.querySelector('.pname').textContent = p.name;
-        node.querySelector('.pdesc').textContent = p.desc;
-        node.querySelector('.price').textContent = money(p.price);
-        node.querySelector('.add').onclick = ()=>{
-          const c = store.cart || [];
-          const found = c.find(x=>x.name===p.name);
-          if(found) found.qty += 1; else c.push({...p, qty:1});
-          store.cart = c; drawCart();
-        };
-        list.appendChild(node);
-      });
-
-      $('#checkout').onclick = ()=>{
-        alert('Demo checkout — connect Stripe Checkout or Shopify Buy Button here.');
-      };
-      drawCart();
-    }
-
-    // ===== Wandering Crow Agent logic =====
-    (() => {
-      const crow = document.getElementById('crowAgent');
-      const audio = document.getElementById('crowCawAudio');
-      const audio2 = document.getElementById('crowCawAudio2'); // second tag as fallback
-
-      const SPEED = 260; // px/sec
-      const PADDING = 24;
-      let busy = false;
-
-      function vw(){ return Math.max(document.documentElement.clientWidth, window.innerWidth || 0); }
-      function vh(){ return Math.max(document.documentElement.clientHeight, window.innerHeight || 0); }
-      function random(min,max){ return Math.random()*(max-min)+min; }
-      function pickSpot(){ return { x: random(PADDING, vw()-PADDING-72), y: random(80, vh()-PADDING-48) }; }
-
-      function moveTo({x,y}){
-        busy = true; crow.classList.add('flying');
-        const rect = crow.getBoundingClientRect();
-        const cx = rect.left, cy = rect.top;
-        const dx = x - cx, dy = y - cy;
-        const dist = Math.hypot(dx, dy);
-        const angle = Math.atan2(dy, dx) * 180/Math.PI;
-        const dur = Math.max(0.8, Math.min(4, dist / SPEED));
-        crow.style.transitionDuration = dur + 's';
-        crow.style.transform = `translate(${x}px, ${y}px) rotate(${angle}deg)`;
-        const onEnd = () => {
-          crow.removeEventListener('transitionend', onEnd);
-          crow.classList.remove('flying');
-          busy = false;
-          if(Math.random() < 0.5) caw();
-          scheduleNext();
-        };
-        crow.addEventListener('transitionend', onEnd, {once:true});
-      }
-
-      function caw(){
-        crow.classList.add('cawing');
-        const a = (audio && audio.readyState > 0) ? audio : audio2;
-        if(a && a.readyState > 0){
-          try{ a.currentTime = 0; a.play().catch(()=>{});}catch(e){}
-        }
-        setTimeout(()=> crow.classList.remove('cawing'), 720);
-      }
-
-      function hop(){
-        if(busy) return;
-        busy = true;
-        const rect = crow.getBoundingClientRect();
-        const x = rect.left + random(-18, 18);
-        const y = rect.top + random(-8, 8);
-        crow.style.transitionDuration = '0.35s';
-        crow.style.transform = `translate(${x}px, ${y}px) rotate(${random(-10,10)}deg)`;
-        setTimeout(()=>{ busy=false; scheduleNext(); }, 380);
-      }
-
-      function scheduleNext(){
-        const delay = random(1200, 3800);
-        setTimeout(()=>{
-          if(Math.random() < 0.4) hop();
-          else moveTo(pickSpot());
-        }, delay);
-      }
-
-      function randomCawLoop(){
-        setTimeout(()=>{
-          if(!busy && Math.random() < 0.7) caw();
-          randomCawLoop();
-        }, random(4000, 9000));
-      }
-
-      const start = pickSpot();
-      crow.style.transform = `translate(${start.x}px, ${start.y}px) rotate(${random(-20,20)}deg)`;
-      scheduleNext(); randomCawLoop();
-
-      window.addEventListener('resize', () => {
-        const rect = crow.getBoundingClientRect();
-        const x = Math.min(Math.max(rect.left, PADDING), vw()-PADDING-72);
-        const y = Math.min(Math.max(rect.top, 80), vh()-PADDING-48);
-        crow.style.transform = `translate(${x}px, ${y}px)`;
-      });
-    })();
-
-    // boot
-    $('#year').textContent = new Date().getFullYear();
-    route();
+    setInterval(() => { moveCrow(); randomSqawk(); }, 4000);
+    moveCrow();
   </script>
 </body>
 </html>
