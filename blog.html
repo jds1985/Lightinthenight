@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Podcast Blog</title>
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; background: #111; color: #fff; }
+    header { background: #222; padding: 1rem; display: flex; align-items: center; justify-content: space-between; }
+    header img { height: 60px; }
+    nav a { color: #fff; margin: 0 10px; text-decoration: none; font-weight: bold; }
+    nav a:hover { color: #f90; }
+    main { padding: 2rem; max-width: 800px; margin: auto; }
+    article { background: #222; padding: 1rem; margin-bottom: 1rem; border-radius: 8px; }
+    #crow { position: absolute; width: 64px; height: 64px; background: url('images/crow-sprite.png'); background-size: cover; }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="images/logo.png" alt="Logo">
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="blog.html">Blog</a>
+      <a href="merch.html">Merch</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Blog</h1>
+    <article>
+      <h2>Welcome to the Blog</h2>
+      <p>This is the first blog post. You can expand this section with more posts as you go.</p>
+    </article>
+    <article>
+      <h2>Behind the Scenes</h2>
+      <p>Share stories about your podcasting journey, updates, or sneak peeks.</p>
+    </article>
+  </main>
+
+  <div id="crow"></div>
+  <audio id="crowSound" src="sounds/crow.mp3"></audio>
+  <!-- Sound Effect by freesound_community from Pixabay -->
+
+  <script>
+    const crow = document.getElementById("crow");
+    const sound = document.getElementById("crowSound");
+    function moveCrow() {
+      const x = Math.random() * (window.innerWidth - 64);
+      const y = Math.random() * (window.innerHeight - 64);
+      crow.style.transform = `translate(${x}px, ${y}px)`;
+    }
+    function randomSqawk() {
+      if (Math.random() < 0.3) sound.play();
+    }
+    setInterval(() => { moveCrow(); randomSqawk(); }, 4000);
+    moveCrow();
+  </script>
+</body>
+</html>
